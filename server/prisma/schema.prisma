@@ -1,0 +1,117 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model Admin {
+  id           Int    @id @default(autoincrement())
+  login        String @unique
+  passwordHash String @map("password_hash")
+
+  @@map("admins")
+}
+
+model Movie {
+  id            Int       @id @default(autoincrement())
+  title         String
+  originalTitle String    @map("original_title")
+  year          Int
+  genre         String
+  ageRating     Int       @map("age_rating")
+  durationMin   Int       @map("duration_min")
+  director      String
+  screenwriter  String
+  cast          String[]
+  description   String
+  posterUrl     String    @map("poster_url")
+  trailerUrl    String    @map("trailer_url")
+  rating        Decimal   @default(0) @db.Decimal(3, 1)
+  kpRank        Int?      @map("kp_rank")
+  sessions      Session[]
+
+  @@map("movies")
+}
+
+model Hall {
+  id          Int       @id @default(autoincrement())
+  name        String
+  rows        Int
+  seatsPerRow Int       @map("seats_per_row")
+  seats       Seat[]
+  sessions    Session[]
+
+  @@map("halls")
+}
+
+model Seat {
+  id         Int         @id @default(autoincrement())
+  hallId     Int         @map("hall_id")
+  row        Int
+  number     Int
+  tier       String
+  hall       Hall        @relation(fields: [hallId], references: [id], onDelete: Cascade, onUpdate: NoAction)
+  orderItems OrderItem[]
+
+  @@unique([hallId, row, number])
+  @@map("seats")
+}
+
+model Session {
+  id        Int      @id @default(autoincrement())
+  movieId   Int      @map("movie_id")
+  hallId    Int      @map("hall_id")
+  startsAt  DateTime @map("starts_at") @db.Timestamptz(6)
+  basePrice Int      @map("base_price")
+  movie     Movie    @relation(fields: [movieId], references: [id], onDelete: Cascade, onUpdate: NoAction)
+  hall      Hall     @relation(fields: [hallId], references: [id], onDelete: Cascade, onUpdate: NoAction)
+  orders    Order[]
+
+  @@index([movieId], map: "idx_sessions_movie")
+  @@index([startsAt], map: "idx_sessions_starts_at")
+  @@map("sessions")
+}
+
+model Order {
+  id           Int         @id @default(autoincrement())
+  code         String      @unique
+  sessionId    Int         @map("session_id")
+  customerName String      @map("customer_name")
+  email        String
+  phone        String
+  total        Int
+  status       String      @default("new")
+  // Демо-заказ: создан сидом/автофиллом для витрины, а не покупателем.
+  // Не участвует в /admin/stats; в списке заказов помечается значком «демо».
+  isDemo       Boolean     @default(false) @map("is_demo")
+  createdAt    DateTime    @default(now()) @map("created_at") @db.Timestamptz(6)
+  session      Session     @relation(fields: [sessionId], references: [id], onDelete: Cascade, onUpdate: NoAction)
+  items        OrderItem[]
+
+  @@index([sessionId], map: "idx_orders_session")
+  @@map("orders")
+}
+
+model OrderItem {
+  id        Int   @id @default(autoincrement())
+  orderId   Int   @map("order_id")
+  sessionId Int   @map("session_id")
+  seatId    Int   @map("seat_id")
+  row       Int
+  number    Int
+  tier      String
+  price     Int
+  // Зеркало признака «заказ не отменён» (orders.status <> 'cancelled').
+  // Нужно для частичного уникального индекса (session_id, seat_id) WHERE active:
+  // Prisma не умеет выражать WHERE в @@unique, индекс создаётся в db-indexes.ts.
+  // Синхронизируется при смене статуса заказа и при создании заказов в сидах.
+  active    Boolean @default(true)
+  order     Order @relation(fields: [orderId], references: [id], onDelete: Cascade, onUpdate: NoAction)
+  seat      Seat  @relation(fields: [seatId], references: [id], onDelete: Cascade, onUpdate: NoAction)
+
+  @@index([sessionId], map: "idx_order_items_session")
+  @@map("order_items")
+}

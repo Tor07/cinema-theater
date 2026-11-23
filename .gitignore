@@ -1,0 +1,24 @@
+# Зависимости
+node_modules/
+
+# Сборка
+dist/
+
+# Секреты и локальные настройки (шаблон .env.example — в репозитории)
+.env
+.env.local
+.env.*.local
+
+# Логи
+*.log
+npm-debug.log*
+
+# ОС и редакторы
+.DS_Store
+Thumbs.db
+.idea/
+.vscode/
+
+# Временные файлы и покрытие тестов
+*.tmp
+coverage/

@@ -1,0 +1,12 @@
+[
+  { "name": "Анна Смирнова", "email": "anna.smirnova@example.com", "phone": "+7 (912) 345-67-89" },
+  { "name": "Дмитрий Волков", "email": "d.volkov@example.com", "phone": "+7 (903) 111-22-33" },
+  { "name": "Мария Козлова", "email": "m.kozlova@example.com", "phone": "+7 (921) 555-44-33" },
+  { "name": "Иван Соколов", "email": "i.sokolov@example.com", "phone": "+7 (916) 777-88-99" },
+  { "name": "Елена Морозова", "email": "e.morozova@example.com", "phone": "+7 (905) 234-56-78" },
+  { "name": "Артём Лебедев", "email": "a.lebedev@example.com", "phone": "+7 (926) 876-54-32" },
+  { "name": "Ольга Новикова", "email": "o.novikova@example.com", "phone": "+7 (911) 987-65-43" },
+  { "name": "Сергей Павлов", "email": "s.pavlov@example.com", "phone": "+7 (909) 321-65-87" },
+  { "name": "Ксения Орлова", "email": "k.orlova@example.com", "phone": "+7 (931) 456-78-90" },
+  { "name": "Никита Фёдоров", "email": "n.fedorov@example.com", "phone": "+7 (999) 123-45-67" }
+]
