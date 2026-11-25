@@ -15,13 +15,23 @@
 ## Требования
 
 - Node.js **20.12+** (используется `process.loadEnvFile` для загрузки `.env`)
-- Docker (для PostgreSQL)
+- Docker (для PostgreSQL или для всего стека одной командой)
 
 ## Быстрый старт
 
+### Вариант 1: всё в Docker одной командой
+
 ```bash
-# 1. Поднять PostgreSQL (порт 5433, БД/пользователь/пароль: cinema)
-docker compose up -d
+docker compose up --build
+```
+
+Поднимутся PostgreSQL, API и клиент. Сайт: http://localhost:5173, API: http://localhost:4000/api (документация — `/api/docs`). При первом запуске БД автоматически наполняется демо-данными. Данные сохраняются в томе `cinema_pgdata` между перезапусками.
+
+### Вариант 2: локальная разработка (Node.js)
+
+```bash
+# 1. Поднять только PostgreSQL (порт 5433, БД/пользователь/пароль: cinema)
+docker compose up -d db
 
 # 2. Сервер
 cd server
